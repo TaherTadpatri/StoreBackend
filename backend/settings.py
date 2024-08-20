@@ -227,8 +227,8 @@ USE_TZ = True
 
 # This is recommended for security
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Replace with your React development server port
- "http://localhost:8000"  # Replace with your tunnel's public URL
+    os.getenv('FRONTEND_REACT_HOST') , # Replace with your React development server port
+    os.getenv('DJANGO_HOST')
 ]
 
 
