@@ -151,12 +151,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'oscarpostgre',
+        'USER': 'postgres',
+        'PASSWORD': 'Taher@20',
+        'HOST': 'localhost',
+        'PORT': '5432',
         'ATOMIC_REQUESTS': True,
     }
 }
@@ -227,8 +227,9 @@ USE_TZ = True
 
 # This is recommended for security
 CORS_ALLOWED_ORIGINS = [
-    os.getenv('FRONTEND_REACT_HOST') , # Replace with your React development server port
-    os.getenv('DJANGO_HOST')
+    os.getenv('FRONTEND_REACT_HOST') , 
+    os.getenv('DJANGO_HOST'),
+    'http://localhost:5173',
 ]
 
 
