@@ -15,6 +15,7 @@ from oscar.defaults import *
 import os
 from datetime import timedelta
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -28,7 +29,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY') 
+SECRET_KEY = 'django-insecure-g$y4yq3(f-)ed8(lan4dp-6j*yljn!a_%vu*o!=oqm_^fih(9j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -90,7 +91,7 @@ INSTALLED_APPS = [
  'store1',
  'rest_framework_simplejwt',
  
- 
+ "whitenoise.runserver_nostatic",
 ]
 SITE_ID = 1
 
@@ -109,9 +110,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'oscar.apps.basket.middleware.BasketMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-    
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 
 ]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 ROOT_URLCONF = 'backend.urls'
 REST_FRAMEWORK = {
@@ -150,6 +152,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'),
+                                    conn_max_age=1000)
+}
+
+""" 
+  DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         #'NAME': 'oscarpostgre',
@@ -161,6 +169,7 @@ DATABASES = {
         'ATOMIC_REQUESTS': True,
     }
 }
+"""
 
 AUTHENTICATION_BACKENDS = (
     'oscar.apps.customer.auth_backends.EmailBackend',

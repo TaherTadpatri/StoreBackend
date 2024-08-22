@@ -1,5 +1,4 @@
 /media
-/staticfiles
 /categories
 
 db.sqlite3
