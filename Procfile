@@ -1,3 +1,3 @@
 web: gunicorn backend.wsgi --log-file - 
 #or works good with external database
-web:  gunicorn backend.wsg
+web:  gunicorn backend.wsgi
