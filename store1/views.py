@@ -28,11 +28,12 @@ from django.db.models import Q
 from oscar.apps.checkout.mixins import OrderPlacementMixin
 import string 
 from .razorpay.main import RazorpayClient
-
+from oscarapi.serializers.product import ProductSerializer
 basket=get_model('basket','basket')
 Cart=get_model('basket','line')
 product=get_model('catalogue','product')
 userAddress=get_model('address','useraddress')
+productcatgoery=get_model('catalogue','productcategory') 
 
 
 """
@@ -60,7 +61,24 @@ def caursol(request):
 @api_view(['GET','POST'])
 def getcatproduct(request): 
      if request.method == 'POST':
-          catid=int(request.data.get('category_id'))
+        catid = int(request.data.get('category_id'))
+        products_in_category = productcatgoery.objects.filter(category_id=catid)
+        if products_in_category.exists():
+            product_id = products_in_category.first().product_id  # Get the product ID from the first category
+            Products = product.objects.filter(id=product_id)  # Filter Products based on the retrieved ID
+            print(Products)
+
+            data = []
+            serializer = ProductSerializer(Products, context={'request': request}, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            # Handle the case where no products are found in the category
+            return Response({'message': 'No products found in this category'}, status=status.HTTP_404_NOT_FOUND)
+      
+          
+     
+
+"""catid=int(request.data.get('category_id'))
           Product = get_model('catalogue', 'Product')      
           products=Product.objects.filter(categories=catid)
           data=[]
@@ -71,9 +89,7 @@ def getcatproduct(request):
                    data.append(response.json())
                else: 
                    pass
-          #data=Productcatseralizer(data,many=True)
-          return Response(data,status=status.HTTP_200_OK)
-     
+             #data=Productcatseralizer(data,many=True)"""
 """
    check pincode service available or not using the shiprocket api 
    and the api shiprocket token expires every 10 day need to refresh 
