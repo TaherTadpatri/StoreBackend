@@ -151,13 +151,14 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+
 DATABASES = {
     'default': dj_database_url.config(default=os.getenv('DATABASE_URL'),
                                     conn_max_age=1000)
 }
 
-""" 
-  DATABASES = {
+"""
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         #'NAME': 'oscarpostgre',
@@ -169,8 +170,14 @@ DATABASES = {
         'ATOMIC_REQUESTS': True,
     }
 }
-"""
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "db.sqlite3",
+    }
+}
+"""
 AUTHENTICATION_BACKENDS = (
     'oscar.apps.customer.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -241,6 +248,7 @@ CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONTEND_REACT_HOST') , 
     os.getenv('DJANGO_HOST'),
     'http://localhost:5173',
+    '*'
 ]
 
 
