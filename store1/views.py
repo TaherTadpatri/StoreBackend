@@ -12,7 +12,7 @@ import requests
 import json
 from oscar.apps.basket.models import Basket
 from django.contrib.auth.models import User  
-from django.http import JsonResponse
+
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status, permissions

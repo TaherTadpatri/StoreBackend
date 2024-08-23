@@ -234,11 +234,7 @@ USE_TZ = True
 #CSRF_COOKIE_SAMESITE="Strict"
 #CSRF_COOKIE_HTTPOLY=True
 #CSRF_TRUSTED_ORIGIN=['http://localhost:5173']
-CSRF_TRUSTED_ORIGINS = [
-    'https://storebackend-production-9a2b.up.railway.app',
-    'https://localhost:8000'
-    'https://frameyourmemories.netlify.app'
-]
+
 
 # This is recommended for security
 CORS_ALLOWED_ORIGINS = [
@@ -299,5 +295,14 @@ OSCAR_LINE_STATUS_PIPELINE={
     'Being processed': ('Processed', 'Cancelled',),
     'Cancelled': (),
 }
+
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://storebackend-production-9a2b.up.railway.app',
+    'https://localhost:8000'
+    'https://frameyourmemories.netlify.app'
+]
 
 ENABLE_REGISTRATION = overridable("OSCARAPI_ENABLE_REGISTRATION", True)
