@@ -65,7 +65,7 @@ def getcatproduct(request):
           products=Product.objects.filter(categories=catid)
           data=[]
           for product in products: 
-               url=f'https://storebackend-production-9a2b.up.railway.app/products/{product.id}/'
+               url=f'https://storebackend-production-9a2b.up.railway.app/api/products/{product.id}/'
                response = requests.get(url)
                if response.ok:
                    data.append(response.json())
@@ -112,7 +112,7 @@ def home(request):
 def getParentdata(product_id): 
     parentProduct=product.objects.get(id=product_id) 
     parent_id=parentProduct.parent_id
-    url=f'https://storebackend-production-9a2b.up.railway.app//api/products/{parent_id}/'
+    url=f'https://storebackend-production-9a2b.up.railway.app/api/products/{parent_id}/'
     response=requests.get(url)
     parentData=response.json()
     return ({'id':product_id,
