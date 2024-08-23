@@ -65,7 +65,7 @@ def getcatproduct(request):
           products=Product.objects.filter(categories=catid)
           data=[]
           for product in products: 
-               url=f'http://127.0.0.1:8000/api/products/{product.id}/'
+               url=f'https://storebackend-production-9a2b.up.railway.app/products/{product.id}/'
                response = requests.get(url)
                if response.ok:
                    data.append(response.json())
@@ -112,7 +112,7 @@ def home(request):
 def getParentdata(product_id): 
     parentProduct=product.objects.get(id=product_id) 
     parent_id=parentProduct.parent_id
-    url=f'http://127.0.0.1:8000/api/products/{parent_id}/'
+    url=f'https://storebackend-production-9a2b.up.railway.app//api/products/{parent_id}/'
     response=requests.get(url)
     parentData=response.json()
     return ({'id':product_id,
@@ -127,7 +127,7 @@ def getproductdetails(products):
     for item in products: 
         productid=item['product']
     
-        url=f'http://127.0.0.1:8000/api/products/{productid}/'
+        url=f'https://storebackend-production-9a2b.up.railway.app/api/products/{productid}/'
         response=requests.get(url)
         product_data = response.json() 
         ischild=product_data['structure']
@@ -185,7 +185,7 @@ def addProductToCart(request):
         product_id=request.data['product_id']
         
         quantity=int(request.data['quantity'])
-        url=f'http://localhost:8000/api/products/{product_id}/stockrecords/'
+        url=f'https://storebackend-production-9a2b.up.railway.app/api/products/{product_id}/stockrecords/'
         response = requests.get(url)
         stock_data = response.json()
         if int(stock_data[0]['num_in_stock']) >= quantity:
@@ -418,7 +418,7 @@ def search(request):
         )
         data=[]
         for item in search_products: 
-            url=f'http://127.0.0.1:8000/api/products/{item.id}/'
+            url=f'https://storebackend-production-9a2b.up.railway.app/api/products/{item.id}/'
             response=requests.get(url)
             productData=response.json()
             data.append(productData)       
@@ -606,7 +606,7 @@ def getOrders(request):
             order_lines = OrderLine.objects.filter(order=order)
             product_data = []
             for order_line in order_lines:
-                url = f'http://127.0.0.1:8000/api/products/{order_line.product_id}/'
+                url = f'https://storebackend-production-9a2b.up.railway.app/api/products/{order_line.product_id}/'
                 response = requests.get(url)
                 data=response.json()
                 if data['structure']=='child': 
