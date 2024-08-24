@@ -181,10 +181,13 @@ def view_cart(request):
                 products=None
         except Basket.DoesNotExist:
             basket = Basket.objects.create(owner_id=user_id)
-            return Response({'error' : 'no  product found'},status=status.HTTP_404_NOT_FOUND)
+            return Response({    'productsInformation':[],'Cart':[]},status=status.HTTP_404_NOT_FOUND)
         productseralizer=cartproductseralizer(products,many=True,context={"request" : request})
-        
-        return Response(productseralizer.data,status=status.HTTP_200_OK)
+        response_data={ 
+            'productInformation' : [],
+            'Cart' :productseralizer.data
+        }
+        return Response(response_data,status=status.HTTP_200_OK)
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 """
