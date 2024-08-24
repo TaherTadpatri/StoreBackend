@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-g$y4yq3(f-)ed8(lan4dp-6j*yljn!a_%vu*o!=oqm_^fih(9j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['storebackend-production-9a2b.up.railway.app','*']
+ALLOWED_HOSTS = ['https://frameyourmemories.up.railway.app/','*']
 
 
 # Application definition
@@ -248,7 +248,6 @@ CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONTEND_REACT_HOST') , 
     os.getenv('DJANGO_HOST'),
     'http://localhost:5173',
-    '*'
 ]
 
 
@@ -308,9 +307,10 @@ OSCAR_LINE_STATUS_PIPELINE={
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://storebackend-production-9a2b.up.railway.app',
+    'https://frameyourmemories.up.railway.app',
     'https://localhost:8000'
-    'https://frameyourmemories.netlify.app'
+    'https://frameyourmemories.netlify.app',
+
 ]
 
 ENABLE_REGISTRATION = overridable("OSCARAPI_ENABLE_REGISTRATION", True)
