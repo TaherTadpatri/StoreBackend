@@ -121,6 +121,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+      'rest_framework.authentication.SessionAuthentication',
     )
     
 }
@@ -248,6 +249,7 @@ CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONTEND_REACT_HOST') , 
     os.getenv('DJANGO_HOST'),
     'http://localhost:5173',
+    'http://*',
 ]
 
 
@@ -273,7 +275,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 ACCESS_TOKEN_LIFETIME= timedelta(minutes=6)
-REFRESH_TOKEN_LIFETIME= timedelta(days=1),
+REFRESH_TOKEN_LIFETIME= timedelta(days=1)
 ROTATE_REFRESH_TOKENS= False
 BLACKLIST_AFTER_ROTATION: False
 UPDATE_LAST_LOGIN: False

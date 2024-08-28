@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from store1.api_razorpay import RazorpayOrderAPIView
+from store1.api_razorpay import RazorpayOrderAPIView,TransactionAPIView
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
@@ -24,6 +24,7 @@ urlpatterns = [
 
     path('', include(apps.get_app_config('oscar').urls[0])),
     path('api/createOrder/',RazorpayOrderAPIView.as_view()),
+    path('api/completeOrder/',TransactionAPIView.as_view()),
      path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 

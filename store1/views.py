@@ -29,11 +29,13 @@ from oscar.apps.checkout.mixins import OrderPlacementMixin
 import string 
 from .razorpay.main import RazorpayClient
 from oscarapi.serializers.product import ProductSerializer
+from oscarapi.basket.operations import get_basket
 basket=get_model('basket','basket')
-Cart=get_model('basket','line')
+Lines=get_model('basket','line')
 product=get_model('catalogue','product')
 userAddress=get_model('address','useraddress')
 productcatgoery=get_model('catalogue','productcategory') 
+BasketLine=get_model('basket','line')
 
 
 """
@@ -73,7 +75,7 @@ def getcatproduct(request):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             # Handle the case where no products are found in the category
-            return Response({'message': 'No products found in this category'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': []}, status=status.HTTP_404_NOT_FOUND)
       
           
      
@@ -159,37 +161,56 @@ def getproductdetails(products):
     and a array of product description title,image,description 
 """
 
-@api_view(['POST','GET'])
-@permission_classes([permissions.IsAuthenticated])
-def view_cart(request):
-    basket=get_model('basket','basket') 
-    Cart=get_model('basket','line') 
-    if request.method == 'GET':
-        user_id = request.user.id
-        try:
-            basket = Basket.objects.get(owner=user_id)
-            try: 
-                products=Cart.objects.filter(basket_id=basket.id)
-                productseralizer=cartproductseralizer(products,many=True,context={"request" : request})
-                productdata=getproductdetails(productseralizer.data)
-                response_data={ 
-                    'productsInformation':productdata,
-                    'Cart':productseralizer.data
-                }
-                return Response(response_data,status=status.HTTP_200_OK)
-            except: 
-                products=None
-        except Basket.DoesNotExist:
-            basket = Basket.objects.create(owner_id=user_id)
-            return Response({    'productsInformation':[],'Cart':[]},status=status.HTTP_404_NOT_FOUND)
-        productseralizer=cartproductseralizer(products,many=True,context={"request" : request})
-        response_data={ 
-            'productInformation' : [],
-            'Cart' :productseralizer.data
-        }
-        return Response(response_data,status=status.HTTP_200_OK)
-    return Response(status=status.HTTP_400_BAD_REQUEST)
 
+@permission_classes([permissions.IsAuthenticated])
+class Cart(APIView): 
+    def get(self,request): 
+        lineproducst=[]
+        try:
+            user_basket=get_object_or_404(basket,owner=request.user,status='Open')
+        except basket.MultipleObjectsReturned: 
+           
+            return Response(lineproducst,status=status.HTTP_200_OK)
+       
+        if user_basket.num_items > 1:   #checks the status of the basket ,accepts with the only open basket 
+            open_basket = Basket.objects.filter(id=user_basket.id, status='Open') 
+            if open_basket.exists():
+                user_basket=open_basket.first()
+            else:
+                return Response (lineproducst,status=status.HTTP_200_OK)
+       
+        if user_basket.is_empty: 
+            return Response(lineproducst,status=status.HTTP_200_OK) 
+   
+        user_lines=user_basket.all_lines()
+        for line in user_lines:
+            product = line.product
+            product_images = product.images.all()
+            if product_images.exists():
+                images = product_images.values('original')
+            else:
+                parent_product = product.parent
+                if parent_product:
+                    images = parent_product.images.all().values('original')
+                else:
+                    images = [] 
+            lineproducst.append({ 
+                "title":product.title,
+                "quantity":line.quantity,
+                "price":line.price_incl_tax,
+                "images": [f"{settings.MEDIA_URL}{image['original']}" for image in images],
+                "basket_id":user_basket.id
+            }) 
+      
+        return Response(lineproducst,status=status.HTTP_200_OK)
+
+            
+
+        
+
+
+    
+    
 """
   add product to the cart and if the product is already in the
   cart then increase the quantity of the product in the cart
@@ -206,6 +227,7 @@ def addProductToCart(request):
         quantity=int(request.data['quantity'])
         url=f'https://storebackend-production-9a2b.up.railway.app/api/products/{product_id}/stockrecords/'
         response = requests.get(url)
+        print(response.text)
         stock_data = response.json()
         if int(stock_data[0]['num_in_stock']) >= quantity:
             try:
@@ -243,7 +265,17 @@ def addProductToCart(request):
 @permission_classes([IsAuthenticated])
 def updateCart(request): 
     if request.method == 'POST': 
-        cartItem=request.data['cart']
+        basket=get_basket(request) 
+        product_id = request.data.get('product_id')
+        quantity = int(request.data.get('quantity'))
+        try:
+            line = BasketLine.objects.get(basket=basket, product_id=product_id)
+        except BasketLine.DoesNotExist:
+            return Response({'error': 'Product not found in cart'}, status=status.HTTP_404_NOT_FOUND)
+        line.quantity = quantity
+        line.save()
+        return Response({'message': 'quantity updated'}, status=status.HTTP_200_OK)
+        """cartItem=request.data['cart']
         cartdata=[]
         print(cartItem)
         for product in cartItem: 
@@ -266,7 +298,7 @@ def updateCart(request):
                     cartdata.append(cartitemdata.data)
                 except Cart.DoesNotExist:
                     pass
-        return Response({"cart": cartdata}, status=status.HTTP_200_OK)
+        return Response({"cart": cartdata}, status=status.HTTP_200_OK)"""
 
 country=get_model('address','country') 
 @api_view(['GET']) 

@@ -7,7 +7,7 @@ urlpatterns = [
      path("caursol/",views.caursol),
      path("catproducts/",views.getcatproduct),
      path("checkservice/",views.checkservice),    
-     path("cart/",views.view_cart),
+     path("cart/",views.Cart.as_view()),
      path("home/",views.home),
      path("addToCart",views.addProductToCart),
      path("updateCart",views.updateCart),

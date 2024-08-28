@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Carsuol,OrderImages,Otp,Faq,RazorpayPayment,ContactVendor
+from .models import Carsuol,OrderImages,Otp,Faq,RazorpayPayment,ContactVendor,Transaction
 from oscar.core.loading import get_model
 from drf_extra_fields.fields import Base64ImageField
 from oscar.core.loading import get_model
@@ -73,4 +73,9 @@ class razorapyModelSeralizer(serializers.ModelSerializer):
 class ContactVendorSeralizer(serializers.ModelSerializer): 
     class Meta:
         model=ContactVendor
+        fields='__all__'
+
+class TranscationModelSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model=Transaction
         fields='__all__'
