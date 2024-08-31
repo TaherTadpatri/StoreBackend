@@ -30,6 +30,7 @@ import string
 from .razorpay.main import RazorpayClient
 from oscarapi.serializers.product import ProductSerializer
 from oscarapi.basket.operations import get_basket
+
 basket=get_model('basket','basket')
 Lines=get_model('basket','line')
 product=get_model('catalogue','product')
@@ -60,22 +61,25 @@ def caursol(request):
 
 """
         
-@api_view(['GET','POST'])
+
+@api_view(['POST'])
 def getcatproduct(request): 
      if request.method == 'POST':
         catid = int(request.data.get('category_id'))
         products_in_category = productcatgoery.objects.filter(category_id=catid)
-        if products_in_category.exists():
-            product_id = products_in_category.first().product_id  # Get the product ID from the first category
-            Products = product.objects.filter(id=product_id)  # Filter Products based on the retrieved ID
-            print(Products)
-
-            data = []
-            serializer = ProductSerializer(Products, context={'request': request}, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        products=[]
+        if products_in_category.exists():   
+            for product_item in products_in_category:
+                product_id = product_item.product_id  # Get the product ID from the first category
+                Product_item = product.objects.filter(id=product_id)  # Filter Products based on the retrieved ID
+                serializer = ProductSerializer(Product_item, context={'request': request}, many=True)
+                data=serializer.data[0]
+                products.append(data)
+            return Response(products, status=status.HTTP_200_OK)
         else:
             # Handle the case where no products are found in the category
-            return Response({'message': []}, status=status.HTTP_404_NOT_FOUND)
+            return Response(products,status=status.HTTP_200_OK)
+     return Response({"message":"something went wrong"},status=status.HTTP_400_BAD_REQUEST)
       
           
      
@@ -203,6 +207,29 @@ class Cart(APIView):
             }) 
       
         return Response(lineproducst,status=status.HTTP_200_OK)
+    
+
+    def post(self,request): 
+        try: 
+            product_id=request.data.get('product_id') 
+            if not product_id: 
+                return Response({"error": "missing product_id field"} ,status=status.HTTP_400_BAD_REQUEST)
+            product_object=product.objects.get(id=product_id)
+            user_basket = get_basket(request)
+            quantity=request.data.get('quantity') 
+            user_basket.add_product(product_object,quantity=quantity)
+            user_basket.save() 
+            return Response({"message":"product added sucessfully"},status=status.HTTP_200_OK)
+        except ObjectDoesNotExist: 
+            return Response({"error": "product or basket not found"},status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e: 
+            return Response({"error": f'an error occured {str(e)}'},status=status.HTTP_400_BAD_REQUEST)
+
+
+            
+            
+
+    
 
             
 
